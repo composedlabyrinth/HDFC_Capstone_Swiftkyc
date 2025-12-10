@@ -81,7 +81,7 @@ SwiftKYC/
     ```bash
     python -m venv .venv
     # On Windows:
-    .\.venv\Scriptsctivate
+    .\.venv\Scripts\activate
     # On Linux/macOS:
     source .venv/bin/activate
     ```
