@@ -87,8 +87,8 @@ HDFC_Capstone_Swiftkyc/
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone <repo-url>
-cd CAPSTONEPROJECT
+git clone https://github.com/composedlabyrinth/HDFC_Capstone_Swiftkyc
+cd swiftkyc
 ````
 
 ### 2️⃣ Create and activate a virtual environment
@@ -107,11 +107,11 @@ pip install -r swiftkyc/requirements.txt
 
 ### 4️⃣ Create the `.env` file
 
-Create a file named `.env` in the `CAPSTONEPROJECT` root directory with the following content (adjust `DATABASE_URL` as needed):
+Create a file named `.env` in the root directory with the following content (adjust `DATABASE_URL` as needed):
 
 ```ini
-DATABASE_URL=sqlite:///./swiftkyc.db
-ENV=development
+POSTGRES_DSN=postgresql+asyncpg://swiftkyc:<yourpassword>@localhost:5432/swiftkycdb
+REDIS_URL=redis://..
 ```
 
 ### 5️⃣ Run migrations
@@ -131,7 +131,7 @@ uvicorn swiftkyc.main:app --reload
 The FastAPI server will be running on port 8000 by default.
 
   * **Frontend (Customer/Admin UI):** `http://localhost:8000/`
-  * **Swagger API Docs:** `http://localhost:8000/docs`
+ 
 
 -----
 
@@ -141,11 +141,27 @@ The FastAPI server will be running on port 8000 by default.
 | :--- | :--- | :--- |
 | `/api/v1/health` | `GET` | Health check endpoint |
 | `/api/v1/kyc/session` | `POST` | Create a new KYC session |
-| `/api/v1/kyc/session/{id}` | `PATCH` | Update session data (document upload, selfie, etc.) |
+| `/api/v1/kyc/session/{id}` | `PATCH` | Update session data (select doc type, document upload, selfie, etc.) |
 | `/api/v1/admin/kyc` | `GET` | Retrieve all KYC sessions for review |
 | `/api/v1/admin/kyc/{id}` | `POST` | Approve/Reject a specific session by ID |
 
 -----
+
+## Project Screenshots
+<img width="1889" height="972" alt="image" src="https://github.com/user-attachments/assets/914d3fab-acb5-4f68-a71b-ad7290e6b60b" />
+<img width="1875" height="963" alt="Screenshot 2025-12-11 005113" src="https://github.com/user-attachments/assets/ceda1eec-2ebb-45fa-9d06-f76d4f786c54" />
+<img width="1895" height="178" alt="image" src="https://github.com/user-attachments/assets/6a2fe250-2991-4bff-8874-2abfc9b93753" />
+<img width="1873" height="964" alt="Screenshot 2025-12-11 005559" src="https://github.com/user-attachments/assets/b3d8d3fc-9687-4c67-854f-e3e00f1afe5f" />
+<img width="1229" height="873" alt="Screenshot 2025-12-11 005619" src="https://github.com/user-attachments/assets/d49c32a5-77fb-46f3-8079-f5b48e160228" />
+<img width="1219" height="864" alt="Screenshot 2025-12-11 005631" src="https://github.com/user-attachments/assets/cff82df8-2233-438f-95af-66c99e36194c" />
+<img width="1233" height="877" alt="Screenshot 2025-12-11 005643" src="https://github.com/user-attachments/assets/ce2b600a-1157-4e58-8862-ffb5df669b40" />
+<img width="1266" height="930" alt="Screenshot 2025-12-11 005659" src="https://github.com/user-attachments/assets/ccb5ccbb-3e49-4036-9375-c6027a624e28" />
+<img width="1229" height="960" alt="Screenshot 2025-12-11 005903" src="https://github.com/user-attachments/assets/df974c76-4862-437f-b930-7e3597014779" />
+
+
+
+
+
 
 ## 🛠️ Development Notes
 
