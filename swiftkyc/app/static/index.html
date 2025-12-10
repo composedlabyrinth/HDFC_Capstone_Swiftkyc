@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>SwiftKyc - Digital Banking KYC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+    <header class="top-nav">
+        <div class="brand">
+            <img src="/static/logo.png" alt="SwiftKyc Logo" class="brand-logo" />
+            <div class="brand-text">
+                <h1>SwiftKyc</h1>
+                <p>Digital Banking KYC</p>
+            </div>
+        </div>
+
+        <nav class="nav-links">
+            <button class="nav-link active" data-view="customer-view" id="nav-customer">
+                Customer KYC
+            </button>
+            <button class="nav-link" data-view="admin-view" id="nav-admin">
+                Admin KYC Panel
+            </button>
+            <button class="btn-outline nav-video-kyc" id="btn-video-kyc-home" title="Connect to an agent (Video KYC)">
+                Connect to an agent (Video KYC)
+            </button>
+        </nav>
+    </header>
+
+    <div id="global-message" class="global-message" aria-live="polite"></div>
+
+    <main class="app-layout">
+        <section id="customer-view" class="view view-active">
+            <div class="customer-layout">
+                <section class="wizard">
+                    <header class="wizard-header">
+                        <div class="wizard-title-row">
+                            <h2>Complete your Digital KYC</h2>
+                            <p class="wizard-subtitle">
+                                A guided, secure process to verify your identity using PAN, Aadhaar and a selfie.
+                            </p>
+                        </div>
+
+                        <div class="wizard-progress">
+                            <div class="progress-label">
+                                <span id="progress-step-label">Step 1 of 7</span>
+                                <span id="progress-step-name">Basic Details</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                            </div>
+                            <ol class="wizard-steps">
+                                <li class="wizard-step-indicator wizard-step-indicator-active" data-step="1">1. Basic Details</li>
+                                <li class="wizard-step-indicator" data-step="2">2. Create Session</li>
+                                <li class="wizard-step-indicator" data-step="3">3. Select Document</li>
+                                <li class="wizard-step-indicator" data-step="4">4. Enter Doc Number</li>
+                                <li class="wizard-step-indicator" data-step="5">5. Upload Document</li>
+                                <li class="wizard-step-indicator" data-step="6">6. Selfie Capture</li>
+                                <li class="wizard-step-indicator" data-step="7">7. Check KYC Status</li>
+                            </ol>
+                        </div>
+                    </header>
+
+                    <section class="wizard-body">
+                        <section class="wizard-step wizard-step-active" id="step-basic-details" data-step="1">
+                            <h3>Tell us a bit about yourself</h3>
+                            <p class="step-description">Please enter your basic details as per your bank records.</p>
+
+                            <form id="form-basic-details" class="form-grid">
+                                <div class="form-field">
+                                    <label for="full-name">Full Name</label>
+                                    <input type="text" id="full-name" name="full_name" placeholder="As per bank records" required />
+                                </div>
+
+                                <div class="form-field">
+                                    <label for="dob">Date of Birth</label>
+                                    <input type="date" id="dob" name="dob" required />
+                                    <small class="field-hint">You must be at least 18 years old to proceed with KYC.</small>
+                                </div>
+
+                                <div class="form-field">
+                                    <label for="email">Email (optional)</label>
+                                    <input type="email" id="email" name="email" placeholder="you@example.com" />
+                                </div>
+
+                                <div class="form-field">
+                                    <label for="address-line">Address</label>
+                                    <input type="text" id="address-line" name="address_line" placeholder="House / Flat / Street" required />
+                                </div>
+
+                                <div class="form-field">
+                                    <label for="city">City</label>
+                                    <input type="text" id="city" name="city" required />
+                                </div>
+
+                                <div class="form-field">
+                                    <label for="state">State</label>
+                                    <input type="text" id="state" name="state" required />
+                                </div>
+
+                                <div class="form-field">
+                                    <label for="pincode">Pincode</label>
+                                    <input type="text" id="pincode" name="pincode" maxlength="6" placeholder="6-digit PIN" required />
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" id="btn-basic-next" class="btn-primary">Continue to Mobile Verification</button>
+                                </div>
+
+                                <p id="age-warning" class="inline-warning" aria-live="polite" hidden>
+                                    You must be at least 18 years old to complete digital KYC.
+                                    Please contact your bank branch for alternative onboarding options.
+                                </p>
+                            </form>
+                        </section>
+
+                        <section class="wizard-step" id="step-session" data-step="2">
+                            <h3>Verify your bank-registered mobile number</h3>
+                            <p class="step-description">Enter your mobile number registered with your bank. We will create a secure KYC session against this number.</p>
+
+                            <form id="form-session" class="form-grid">
+                                <div class="form-field">
+                                    <label for="mobile">Bank-registered Mobile Number</label>
+                                    <div class="input-with-prefix">
+                                        <span class="input-prefix">+91</span>
+                                        <input type="tel" id="mobile" name="mobile" maxlength="10" placeholder="10-digit mobile number" required />
+                                    </div>
+                                    <small class="field-hint">We will not spam you. This is only used to create your KYC session.</small>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="btn-session-back">Back</button>
+                                    <button type="button" class="btn-primary" id="btn-create-session">Create KYC Session</button>
+                                </div>
+                            </form>
+
+                            <div class="session-info">
+                                <p><strong>Session ID:</strong> <span id="session-id-display">—</span></p>
+                                <p><strong>Current Status:</strong> <span id="session-status-display">Not created yet</span></p>
+                            </div>
+                        </section>
+
+                        <section class="wizard-step" id="step-select-doc" data-step="3">
+                            <h3>Select documents for KYC</h3>
+                            <p class="step-description">For digital onboarding, <strong>PAN and Aadhaar are mandatory</strong>. You may also optionally provide Passport or Voter ID.</p>
+
+                            <form id="form-select-doc" class="form-grid">
+                                <fieldset class="form-field">
+                                    <legend>Primary KYC Document</legend>
+                                    <div class="doc-options">
+                                        <label class="doc-option"><input type="radio" name="doc_type" value="PAN" required /><span>PAN</span></label>
+                                        <label class="doc-option"><input type="radio" name="doc_type" value="AADHAAR" /><span>Aadhaar</span></label>
+                                        <label class="doc-option"><input type="radio" name="doc_type" value="PASSPORT" /><span>Passport</span></label>
+                                        <label class="doc-option"><input type="radio" name="doc_type" value="VOTER_ID" /><span>Voter ID</span></label>
+                                    </div>
+                                    <small class="field-hint">PAN + Aadhaar are preferred. If you select Passport or Voter ID, you may still be asked for PAN and Aadhaar later as per RBI/Bank guidelines.</small>
+                                </fieldset>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="btn-select-doc-back">Back</button>
+                                    <button type="button" class="btn-primary" id="btn-select-doc-continue">Continue</button>
+                                </div>
+                            </form>
+                        </section>
+
+                        <section class="wizard-step" id="step-doc-number" data-step="4">
+                            <h3>Enter your document number</h3>
+                            <p class="step-description">Please enter your selected document number exactly as it appears on your document. We’ll validate the format before proceeding.</p>
+
+                            <form id="form-doc-number" class="form-grid">
+                                <div class="form-field">
+                                    <label for="doc-number-input">Document Number <span id="doc-number-label-hint">(e.g. PAN: ABCDE1234F)</span></label>
+                                    <input type="text" id="doc-number-input" name="doc_number" autocomplete="off" required />
+                                    <small id="doc-number-format-hint" class="field-hint">PAN: 10 characters (5 letters, 4 digits, 1 letter). Aadhaar: 12 digits only.</small>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="btn-doc-number-back">Back</button>
+                                    <button type="button" class="btn-primary" id="btn-doc-number-continue">Validate & Continue</button>
+                                </div>
+                            </form>
+
+                            <div id="doc-number-error" class="inline-error" aria-live="polite"></div>
+                        </section>
+
+                        <section class="wizard-step" id="step-upload-doc" data-step="5">
+                            <h3>Scan & upload your document</h3>
+                            <p class="step-description">Use your phone camera to capture a clear image of your selected document. We will perform image quality checks before submitting it to the server.</p>
+
+                            <div class="camera-guidelines">
+                                <ul>
+                                    <li>Place the document on a flat, dark surface.</li>
+                                    <li>Ensure all four corners are visible.</li>
+                                    <li>Avoid glare, reflections, and strong shadows.</li>
+                                    <li>Hold the camera steady until the image looks sharp.</li>
+                                </ul>
+                            </div>
+
+                            <form id="form-upload-doc" class="form-grid">
+                                <div class="form-field">
+                                    <label for="doc-file">Upload document image</label>
+                                    <input type="file" id="doc-file" name="document_file" accept="image/jpeg,image/png" required />
+                                    <small class="field-hint">JPEG or PNG only. Max size 4 MB. We’ll warn you if the image looks blurry or poorly lit.</small>
+                                </div>
+
+                                <div id="doc-quality-feedback" class="quality-feedback" aria-live="polite"></div>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="btn-upload-doc-back">Back</button>
+                                    <button type="button" class="btn-primary" id="btn-upload-doc-continue">Upload & Validate</button>
+                                </div>
+                            </form>
+
+                            <div id="doc-upload-status" class="async-status" aria-live="polite"></div>
+                        </section>
+
+                        <section class="wizard-step" id="step-selfie" data-step="6">
+                            <h3>Take a quick selfie</h3>
+                            <p class="step-description">We’ll match this selfie with the photo on your document to ensure it’s really you.</p>
+
+                            <div class="camera-guidelines">
+                                <ul>
+                                    <li>Sit in a well-lit area with light facing your face.</li>
+                                    <li>Remove caps, sunglasses, and masks.</li>
+                                    <li>Keep your face fully visible and centered.</li>
+                                    <li>Avoid extreme angles or filters.</li>
+                                </ul>
+                            </div>
+
+                            <div class="selfie-capture-area">
+                                <div class="selfie-overlay">
+                                    <div id="camera-controls" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:10px">
+                                        <button id="btn-open-camera" type="button" class="btn-outline">Open Camera</button>
+                                        <button id="btn-capture-selfie" type="button" class="btn-primary" hidden>Capture</button>
+                                        <button id="btn-close-camera" type="button" class="btn-secondary" hidden>Close Camera</button>
+                                    </div>
+
+                                    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+                                        <video id="selfie-video" autoplay playsinline style="max-width:100%;border-radius:8px;display:none;"></video>
+                                        <canvas id="selfie-canvas" style="display:none;"></canvas>
+                                        <img id="selfie-preview" alt="Selfie preview" style="max-width:220px;border-radius:8px;display:none;border:1px solid rgba(0,0,0,0.07)" />
+                                        <p id="selfie-instructions" class="field-hint">Click "Open Camera" to allow camera access and take a selfie. Captured selfie will be uploaded as a file automatically.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <form id="form-selfie" class="form-grid">
+                                <div class="form-field">
+                                    <label for="selfie-file">upload a selfie</label>
+                                    <input type="file" id="selfie-file" name="selfie_file" accept="image/jpeg,image/png" />
+                                    <small class="field-hint">JPEG or PNG only. Max size 4 MB. You can also use the camera above to capture (the capture will be converted to a file automatically).</small>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="btn-selfie-back">Back</button>
+                                    <button type="button" class="btn-primary" id="btn-selfie-continue">Upload & Run Face Match</button>
+                                </div>
+                            </form>
+
+                            <div id="selfie-upload-status" class="async-status" aria-live="polite"></div>
+                        </section>
+
+                        <section class="wizard-step" id="step-status" data-step="7">
+                            <h3>Your KYC status</h3>
+                            <p class="step-description">We’ll keep you updated in real time as your KYC is being processed.</p>
+
+                            <div class="status-card">
+                                <p><strong>Session ID:</strong> <span id="status-session-id">—</span></p>
+                                <p><strong>Current Step:</strong> <span id="status-current-step">—</span></p>
+                                <p><strong>KYC Status:</strong> <span id="status-kyc-status">—</span></p>
+                                <p><strong>Failure Reason (if any):</strong> <span id="status-failure-reason">None</span></p>
+                                <p><strong>Retries (document):</strong> <span id="status-retries-doc">0</span></p>
+                                <p><strong>Retries (selfie):</strong> <span id="status-retries-selfie">0</span></p>
+                                <p><strong>Face Match Score:</strong> <span id="status-face-score">—</span></p>
+                            </div>
+
+                            <div class="form-actions" style="margin-top:12px">
+                                <button type="button" class="btn-primary" id="btn-refresh-status">Refresh Status</button>
+                            </div>
+
+                            <section id="assisted-kyc-section" class="assisted-kyc" hidden>
+                                <h4>Having trouble completing KYC?</h4>
+                                <p>If your KYC keeps failing due to document quality or face mismatch, you can switch to assisted KYC via Video KYC.</p>
+
+                                <div class="assisted-options" style="margin-top:12px">
+                                    <button type="button" class="btn-outline" id="btn-video-kyc" hidden>Connect to an agent (Video KYC)</button>
+                                </div>
+                            </section>
+                        </section>
+                    </section>
+                </section>
+
+                <aside class="help-panel">
+                    <h3>Help & Tips</h3>
+                    <p class="help-intro">Stuck somewhere? These quick tips can help you complete your KYC smoothly.</p>
+
+                    <section class="help-section">
+                        <h4>Common document issues</h4>
+                        <ul>
+                            <li>Make sure all four corners of the document are visible.</li>
+                            <li>Avoid clicking photos under direct sunlight or harsh lights.</li>
+                            <li>Clean your camera lens for a sharper image.</li>
+                            <li>Keep the document text in focus and readable.</li>
+                        </ul>
+                    </section>
+
+                    <section class="help-section">
+                        <h4>Selfie tips</h4>
+                        <ul>
+                            <li>Face a window or soft light source; avoid strong backlight.</li>
+                            <li>Do not cover your face with hair, hands, or accessories.</li>
+                            <li>Keep the phone at eye level and look straight at the camera.</li>
+                        </ul>
+                    </section>
+
+                    <section class="help-section">
+                        <h4>Why did my KYC fail?</h4>
+                        <p>We’ll always show you a clear reason: blurry image, glare, corners missing, or face mismatch. Follow the on-screen guidance and try again. If it still fails, use Video KYC (top-right) to connect with an agent.</p>
+                    </section>
+
+                    <section class="help-section inline-assistant">
+                        <h4>In-app assistant (FAQ)</h4>
+                        <div class="assistant-faq">
+                            <button type="button" class="assistant-question" data-faq="blurry">My document image looks fine to me. Why is it marked as blurry?</button>
+                            <div class="assistant-answer" data-faq-answer="blurry" hidden>Our quality checks look at sharpness, contrast, and text clarity. Try moving closer, using better lighting, and ensuring the camera is steady for a few seconds before capture.</div>
+
+                            <button type="button" class="assistant-question" data-faq="glare">How do I avoid glare and reflections?</button>
+                            <div class="assistant-answer" data-faq-answer="glare" hidden>Tilt the document slightly, move away from direct light, and ensure no bright spot is covering key text or your photo.</div>
+
+                            <button type="button" class="assistant-question" data-faq="mismatch">It says “face mismatch”. What should I do?</button>
+                            <div class="assistant-answer" data-faq-answer="mismatch" hidden>Ensure your selfie matches your document photo as much as possible: similar hairstyle, no heavy makeup or filters, and a clear, unobstructed face. If it still fails, use Video KYC (top-right) to connect with an agent.</div>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </section>
+
+        <section id="admin-view" class="view" hidden>
+            <div class="admin-layout">
+                <header class="admin-header">
+                    <h2>Admin Panel</h2>
+                    <p>Review, filter, and manually approve/reject KYC sessions in real-time.</p>
+                </header>
+
+                <div id="admin-session-instruction" style="margin-top:12px;margin-bottom:12px;color:#e5e7eb;">
+                    
+                </div>
+
+                <section class="admin-session-detail" style="margin-top:20px">
+                    <h3>Session Details</h3>
+                    <div id="admin-session-empty-state">
+                        Select a session from the table below to view details in the top panel.
+                    </div>
+
+                    <div id="admin-session-detail-content" class="admin-session-detail-content" hidden>
+                        <div class="detail-grid">
+                            <div>
+                                <p><strong>Session ID:</strong> <span id="admin-detail-session-id">—</span></p>
+                                <p><strong>Customer ID:</strong> <span id="admin-detail-customer-id">—</span></p>
+                                <p><strong>Status:</strong> <span id="admin-detail-status">—</span></p>
+                                <p><strong>Current Step:</strong> <span id="admin-detail-current-step">—</span></p>
+                            </div>
+                            <div>
+                                <p><strong>Failure Reason:</strong></p>
+                                <p id="admin-detail-failure-reason">—</p>
+                                <p><strong>Selfie URL:</strong> <span id="admin-detail-selfie-url">—</span></p>
+                                <p><strong>Face Match Score:</strong> <span id="admin-detail-face-score">—</span></p>
+                            </div>
+                            <div>
+                                <p><strong>Retries (select):</strong> <span id="admin-detail-retries-select">0</span></p>
+                                <p><strong>Retries (scan):</strong> <span id="admin-detail-retries-scan">0</span></p>
+                                <p><strong>Retries (upload):</strong> <span id="admin-detail-retries-upload">0</span></p>
+                                <p><strong>Retries (selfie):</strong> <span id="admin-detail-retries-selfie">0</span></p>
+                            </div>
+                        </div>
+
+                        <h4>Documents</h4>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Document ID</th>
+                                        <th>Type</th>
+                                        <th>Number</th>
+                                        <th>Storage URL</th>
+                                        <th>Is Valid</th>
+                                        <th>Quality Score</th>
+                                        <th>Created At</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-documents-body"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="admin-actions" style="margin-top:12px">
+                            <button type="button" class="btn-primary" id="btn-admin-approve">Approve KYC</button>
+                            <button type="button" class="btn-danger" id="btn-admin-reject">Reject KYC</button>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="admin-layout-bottom">
+                    <aside class="admin-filters-sidebar">
+                        <h3>Filter KYC sessions</h3>
+                        <form id="form-admin-filters" class="form-grid">
+                            <div class="form-field">
+                                <label for="filter-status">Status</label>
+                                <select id="filter-status" name="status">
+                                    <option value="">Any</option>
+                                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                                    <option value="APPROVED">APPROVED</option>
+                                    <option value="REJECTED">REJECTED</option>
+                                    <option value="ABANDONED">ABANDONED</option>
+                                </select>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="filter-doc-type">Document Type</label>
+                                <select id="filter-doc-type" name="doc_type">
+                                    <option value="">Any</option>
+                                    <option value="PAN">PAN</option>
+                                    <option value="AADHAAR">AADHAAR</option>
+                                    <option value="PASSPORT">PASSPORT</option>
+                                    <option value="VOTER_ID">Voter ID</option>
+                                </select>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="filter-date">Created On</label>
+                                <input type="date" id="filter-date" name="created_on" />
+                            </div>
+
+                            <div class="form-actions" style="justify-content:space-between">
+                                <button type="button" class="btn-secondary" id="btn-admin-reset-filters">Reset</button>
+                                <button type="button" class="btn-primary" id="btn-admin-apply-filters">Apply</button>
+                            </div>
+                        </form>
+                    </aside>
+
+                    <div class="admin-table-area">
+                        <h3>KYC Sessions</h3>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Session ID</th>
+                                        <th>Customer ID</th>
+                                        <th>Status</th>
+                                        <th>Current Step</th>
+                                        <th>Primary Doc Type</th>
+                                        <th>Created At</th>
+                                        <th>Updated At</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-sessions-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div></div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>© <span id="current-year"></span> SwiftKyc. Built for HDFC Capstone Project.</p>
+    </footer>
+
+    <script src="/static/app.js" defer></script>
+</body>
+</html>
