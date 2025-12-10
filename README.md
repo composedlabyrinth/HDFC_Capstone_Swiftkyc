@@ -1,157 +1,164 @@
-# 📄 SwiftKYC — Digital KYC Verification System
+# 🚀 SwiftKYC — Digital KYC Verification System
 
-SwiftKYC is a lightweight, modular digital **KYC (Know Your Customer)** platform built for modern banking and fintech onboarding. It provides a smooth, step-controlled customer KYC flow and a robust admin review dashboard *without* relying on complex OCR (Optical Character Recognition) services.
+SwiftKYC is a modular and lightweight **KYC (Know Your Customer)** verification system designed for modern banking, fintech onboarding, and identity verification workflows.
 
-## ✨ High-Level System Architecture
+It provides a **step-controlled customer onboarding flow**, robust document validation, and a powerful **admin review panel**, all powered by an efficient FastAPI backend and a minimal HTML/JS/CSS frontend.
 
-SwiftKYC follows a client-server architecture. The frontend guides the customer through the steps, while the FastAPI backend enforces the workflow and handles validation.
+---
 
-## 🚀 Features
+## 💡 System Architecture
 
-### Customer KYC Flow
-* **Create KYC Session:** Initiates the session using basic details (Name, DOB, Mobile).
-* **Guided Multi-Step Wizard:** A seamless, step-controlled user experience.
-* **Document Handling (No OCR):**
-    * Document type selection (**Aadhaar / PAN**).
-    * Upload document images.
-    * Manual entry of document number.
-* **Live Selfie Capture:** Utilizes the camera API for real-time photo capture.
-* **Real-time Validation & UX Feedback:** Provides rich progress indicators and immediate feedback on steps.
+The system is split into two primary components: the FastAPI backend which handles business logic and storage, and the static frontend which provides the user interface.
 
-### 🛡️ Backend Logic (FastAPI - No OCR)
-The backend enforces a strict, step-by-step workflow for data integrity.
-* **Clean, Async Architecture:** Built with FastAPI for high performance.
-* **Strict Step-by-Step Workflow:**
-    1.  `Create Session`
-    2.  `Enter Document Type`
-    3.  `Upload Document`
-    4.  `Enter Document Number`
-    5.  `Upload Selfie`
-    6.  `Await Admin Review`
-* **Document & Selfie Validation (Basic):**
-    * Checks file format and ensures proper step order.
-    * **Selfie Rejection Logic (File Size Only):** Rejects images **< 100 KB** or **> 4 MB** to prevent low-quality/excessively large files.
-* **Admin Endpoints:** For manual review, including `Approve`, `Reject`, `Fetch all sessions`, and `View individual session details`.
 
-### 🌐 Frontend (Vanilla JS)
-* **Clean Vanilla JavaScript:** Zero build tools required for simplicity.
-* **Smooth Step Navigation:** Manages the multi-step wizard logic.
-* **Robust Uploads:** Document upload with loading modal and cancellation using `AbortController`.
-* **Camera Integration:** Uses the browser's `getUserMedia` API for selfie capture.
-* **Admin Panel:** Full session list and detail view for reviewers.
-* **Responsive Layout:** Optimized for mobile and desktop.
+
+### ⚙️ Tech Stack
+
+| Component | Technology | Role |
+| :--- | :--- | :--- |
+| **Backend** | Python 3.x, **FastAPI** | High-performance API server, routing, and workflow enforcement. |
+| **Database** | **SQLAlchemy** (ORM), **Alembic** | Database modeling and migration management. |
+| **Frontend** | HTML5, Vanilla JavaScript, CSS3 | Minimal, non-framework UI for customer and admin flows. |
+| **Async Processing** | Celery/Standalone Worker (Optional) | Handles background tasks (e.g., future OCR processing). |
+
+---
+
+## 📌 Features
+
+### 🔹 Customer KYC Flow
+* Create and manage new KYC sessions.
+* Guided, **step-by-step controlled workflow** for data integrity.
+* Document upload (supports Aadhaar/PAN image files).
+* Live **Selfie capture and upload**.
+* Designed to be **OCR-validation ready** for future integration.
+
+### 🔹 Admin Panel (Review Dashboard)
+* **View all user KYC sessions** in a centralized dashboard.
+* Dedicated **Document review interface**.
+* Functionality to **Approve / Reject** KYC applications.
+* Filter sessions by status (pending / approved / rejected).
+
+### 🔹 Architecture Highlights
+* **Modular Routing:** Cleanly separated API routes (`admin_kyc.py`, `routes_kyc_session.py`).
+* **Clean Separation:** Strict separation of schemas, services, and DB models for maintainability.
+* **Static UI:** Frontend is served directly from `app/static`.
+* **Alembic Integration:** Database schema management is version-controlled.
+
+---
 
 ## 📁 Folder Structure
 
-```bash
-SwiftKYC/
-│
-├── swiftkyc-backend/
-│   ├── app/
-│   │   ├── routes/
-│   │   │   └── kyc_session.py    # FastAPI routes for KYC steps
-│   │   ├── services/
-│   │   │   └── face_validation.py  # File-size validation only
-│   │   ├── models/             # Database models (SQLAlchemy)
-│   │   ├── utils/              # Utility functions
-│   │   ├── db/                 # Database configuration
-│   │   └── main.py             # FastAPI application entry point
-│   │
-│   ├── requirements.txt
-│   └── Dockerfile
-│
-├── swiftkyc-frontend/
-│   ├── index.html              # Customer KYC start page
-│   ├── app.js                  # Customer KYC logic
-│   ├── styles.css
-│   ├── admin/
-│   │   ├── index.html          # Admin panel page
-│   │   ├── admin.js            # Admin panel logic
-│   │   └── admin.css
-│   └── assets/
-│
+```
+
+HDFC_Capstone_Swiftkyc/
+├── .venv/
+├── swiftkyc/
+│ ├── app/
+│ │ ├── api/
+│ │ │ └── v1/
+│ │ │ ├── admin\_kyc.py         \# Admin-specific review routes
+│ │ │ ├── routes\_health.py      \# Health check
+│ │ │ └── routes\_kyc\_session.py \# Customer KYC workflow routes
+│ │ ├── core/
+│ │ ├── db/
+│ │ ├── models/                 \# SQLAlchemy ORM definitions
+│ │ ├── schemas/                \# Pydantic models for request/response
+│ │ ├── services/               \# Business logic components
+│ │ ├── static/                 \# Frontend assets (served as UI)
+│ │ │ ├── app.js
+│ │ │ ├── index.html            \# Main UI
+│ │ │ └── styles.css
+│ │ ├── utils/
+│ │ └── workers/                \# Background worker tasks
+│ ├── migrations/               \# Alembic migration scripts
+│ ├── uploads/                  \# Storage for uploaded documents & selfies
+│ ├── .env
+│ ├── alembic.ini
+│ ├── main.py                   \# FastAPI application entrypoint
+│ ├── requirements.txt
+│ └── worker.py                 \# Celery or standalone worker script
 └── README.md
-```
 
-## ⚙️ Installation & Setup
+````
 
-### Backend Setup (FastAPI)
+---
 
-1.  **Create and activate virtual environment**
-    ```bash
-    python -m venv .venv
-    # On Windows:
-    .\.venv\Scripts\activate
-    # On Linux/macOS:
-    source .venv/bin/activate
-    ```
-2.  **Install dependencies**
-    ```bash
-    pip install --upgrade pip
-    pip install -r swiftkyc-backend/requirements.txt
-    ```
-3.  **Run database migrations** (Requires PostgreSQL to be running and configured)
-    ```bash
-    alembic upgrade head
-    ```
-4.  **Start the FastAPI server**
-    ```bash
-    cd swiftkyc-backend
-    uvicorn app.main:app --reload
-    ```
-    * **Backend runs at:** ➡ `http://localhost:8000`
-    * **Swagger docs:** ➡ `http://localhost:8000/docs`
+## 🔧 Installation & Setup
 
-### Frontend Setup
-No build tools are required. Just open the HTML files directly in your browser.
-
-* **Customer KYC:** `swiftkyc-frontend/index.html`
-* **Admin panel:** `swiftkyc-frontend/admin/index.html`
-
-### Docker Setup (Optional)
-This is the recommended way to run the entire stack (FastAPI, DB, etc.)
+### 1️⃣ Clone the repository
 ```bash
-docker compose up --build
+git clone <repo-url>
+cd CAPSTONEPROJECT
+````
+
+### 2️⃣ Create and activate a virtual environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate    # Mac/Linux
+# .venv\Scripts\activate     # Windows
 ```
 
-This will start:
+### 3️⃣ Install dependencies
 
-  * Backend API
-  * PostgreSQL
-  * *Worker (if configured)*
-  * *Redis (optional)*
+```bash
+pip install -r swiftkyc/requirements.txt
+```
 
-## 🔌 API Examples
+### 4️⃣ Create the `.env` file
 
-| Step | Method | Path | Body / Description |
-| :--- | :--- | :--- | :--- |
-| **1. Create Session** | `POST` | `/kyc/session/create` | `{"name": "Amit Verma", "dob": "1999-02-14", "mobile": "9876543210"}` |
-| **2. Enter Doc Type** | `POST` | `/kyc/session/{session_id}/enter-doc-type` | `{"doc_type": "AADHAAR"}` **(or `PAN`)** |
-| **3. Upload Document**| `POST` | `/kyc/session/{session_id}/validate-document` | **Content-Type: `multipart/form-data`** (`file=<document image>`) |
-| **4. Enter Doc Number**| `POST` | `/kyc/session/{session_id}/enter-doc-number` | `{"doc_number": "ABCDE1234F"}` |
-| **5. Upload Selfie** | `POST` | `/kyc/session/{session_id}/upload-selfie` | **Content-Type: `multipart/form-data`** (`file=<jpeg/png>`) |
-| **6. Admin Fetch All**| `GET` | `/admin/kyc` | *(No body)* |
-| **7. Admin Approve** | `POST` | `/admin/kyc/{session_id}/approve` | *(No body)* |
-| **8. Admin Reject** | `POST` | `/admin/kyc/{session_id}/reject` | *(No body)* |
+Create a file named `.env` in the `CAPSTONEPROJECT` root directory with the following content (adjust `DATABASE_URL` as needed):
 
-## 🛠 Tech Stack
+```ini
+DATABASE_URL=sqlite:///./swiftkyc.db
+ENV=development
+```
 
-| Component | Technology | Description |
+### 5️⃣ Run migrations
+
+```bash
+alembic upgrade head
+```
+
+### 6️⃣ Start the FastAPI server
+
+```bash
+uvicorn swiftkyc.main:app --reload
+```
+
+### 7️⃣ Access the Application
+
+The FastAPI server will be running on port 8000 by default.
+
+  * **Frontend (Customer/Admin UI):** `http://localhost:8000/`
+  * **Swagger API Docs:** `http://localhost:8000/docs`
+
+-----
+
+## 📬 API Endpoints (Summary)
+
+| Route | Method | Description |
 | :--- | :--- | :--- |
-| **Backend** | Python 3.10+ | Primary language |
-| **Web Framework**| FastAPI | High-performance, async framework |
-| **Database** | PostgreSQL | Robust, open-source RDBMS |
-| **ORM/Migrations** | SQLAlchemy, Alembic | Database toolkit and migration engine |
-| **Data Validation**| Pydantic | Python data parsing and validation |
-| **Image Handling** | Pillow | Basic image operations (for file size check) |
-| **Frontend** | HTML5, CSS3 | Structure and styling |
-| **Interactivity** | Vanilla JavaScript | Front-end logic, no heavy frameworks |
-| **APIs** | Camera API (`getUserMedia`), Fetch API | For selfie capture and network requests |
-| **DevOps** | Docker, Docker Compose | Containerization for easy setup |
+| `/api/v1/health` | `GET` | Health check endpoint |
+| `/api/v1/kyc/session` | `POST` | Create a new KYC session |
+| `/api/v1/kyc/session/{id}` | `PATCH` | Update session data (document upload, selfie, etc.) |
+| `/api/v1/admin/kyc` | `GET` | Retrieve all KYC sessions for review |
+| `/api/v1/admin/kyc/{id}` | `POST` | Approve/Reject a specific session by ID |
 
-## 🙌 Future Enhancements
+-----
 
-  * Add full **OCR pipeline** for automated PAN/Aadhaar data extraction.
-  * Integrate **face match logic** between the document photo and the live selfie.
-  * Add optional **video KYC** flow.
-  * Improve **admin analytics dashboard** with metrics and reporting.
+## 🛠️ Development Notes
+
+| Aspect | Location | Description |
+| :--- | :--- | :--- |
+| **Frontend UI** | `swiftkyc/app/static/` | Update UI by modifying `index.html`, `app.js`, and `styles.css`. |
+| **File Storage** | `swiftkyc/uploads/` | All user uploads (photos, documents) are saved here. |
+| **Communication** | REST-based | Backend and frontend use a purely REST communication model. |
+
+## 📌 Future Enhancements
+
+  * Full **OCR integration** for automated PAN/Aadhaar data extraction.
+  * Implement **Video KYC** capabilities.
+  * Integrate **Face match** / Liveness detection services.
+  * Implement Advanced **RBAC (Role-Based Access Control)** for the admin panel.
+  * Develop a **Multi-language UI** for broader accessibility.
